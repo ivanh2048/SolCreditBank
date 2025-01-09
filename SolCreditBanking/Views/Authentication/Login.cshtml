@@ -1,0 +1,27 @@
+﻿@model SolCreditBanking.Models.LoginViewModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-6">
+        <h2 class="mb-4">Logowanie</h2>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">Nieprawidłowy email lub hasło.</div>
+        }
+
+        <form asp-action="Login" asp-controller="Authentication" method="post" class="p-4 shadow-sm bg-white rounded">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="np. jan.kowalski@gmail.com" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Hasło</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Wpisz hasło" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Zaloguj się</button>
+        </form>
+    </div>
+</div>

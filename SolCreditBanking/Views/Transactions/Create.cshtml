@@ -1,0 +1,17 @@
+﻿@model Transaction
+
+<h2>Dodaj transakcję</h2>
+
+<form asp-action="Create" asp-controller="Transactions" method="post">
+    <input type="hidden" asp-for="AccountId" />
+
+    <div>
+        <label asp-for="TransactionType">Rodzaj transakcji (Deposit/Withdrawal):</label>
+        <input asp-for="TransactionType" />
+    </div>
+    <div>
+        <label asp-for="Amount">Kwota:</label>
+        <input asp-for="Amount" type="number" step="0.01" />
+    </div>
+    <button type="submit">Zatwierdź</button>
+</form>

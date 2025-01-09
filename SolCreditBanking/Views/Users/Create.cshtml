@@ -1,0 +1,23 @@
+﻿@model User
+
+<h1>Dodaj użytkownika</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="FirstName">Imię</label>
+        <input type="text" id="FirstName" name="FirstName" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="LastName">Nazwisko</label>
+        <input type="text" id="LastName" name="LastName" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" id="Email" name="Email" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Password">Hasło</label>
+        <input type="password" id="Password" name="Password" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Dodaj</button>
+</form>

@@ -1,0 +1,25 @@
+﻿/* site.css */
+
+/* Przykład: wyrównanie formularzy, marginesy, itp. */
+form {
+    max-width: 450px;
+    margin: 0 auto; /* Wycentruj formularz */
+}
+
+/* Możesz dodać tło i kolor nagłówka np. do h2 */
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Poprawka dla alertów, np. zmiana koloru textu w alert-info */
+.alert-info {
+    color: #0c5460;
+}
+
+/* Karta z balansem konta mogłaby mieć inny cień */
+.card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* cokolwiek uznasz za potrzebne */

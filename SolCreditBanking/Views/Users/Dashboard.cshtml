@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<h2 class="mt-4 mb-4">Twój Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Konto główne</h5>
+                <p class="card-text">
+                    Saldo: <strong>@(ViewBag.Account?.Balance ?? 0)</strong> PLN
+                </p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Ostatnie transakcje</h5>
+
+                @if (ViewBag.Transactions == null || ViewBag.Transactions.Count == 0)
+                {
+                    <div class="alert alert-info">Brak transakcji do wyświetlenia.</div>
+                }
+                else
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Kwota</th>
+                                <th>Typ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var txn in ViewBag.Transactions)
+                            {
+                                <tr>
+                                    <td>@txn.Date</td>
+                                    <td>@txn.Amount</td>
+                                    <td>@txn.TransactionType</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                <a asp-action="Create" asp-controller="Transactions" class="btn btn-success btn-sm mt-2">
+                    Dodaj transakcję
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
