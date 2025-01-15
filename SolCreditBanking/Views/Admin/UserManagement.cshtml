@@ -1,0 +1,78 @@
+﻿@model IEnumerable<SolCreditBanking.Models.User>
+@{
+    Layout = "_Layout";
+}
+
+<h2>Panel Administratora – Zarządzanie Użytkownikami</h2>
+
+<!-- Komunikat o resecie hasła, jeśli istnieje w TempData -->
+@if (TempData["ResetMessage"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["ResetMessage"]
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Rola</th>
+            <th>IsBlocked</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>@user.IsBlocked</td>
+                <td>
+                    <!-- Blokowanie/odblokowanie -->
+                    @if (!user.IsBlocked)
+                    {
+                        <form method="post" asp-action="BlockUser" asp-controller="Admin" style="display:inline;">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button class="btn btn-warning btn-sm">Zablokuj</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="UnblockUser" asp-controller="Admin" style="display:inline;">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button class="btn btn-success btn-sm">Odblokuj</button>
+                        </form>
+                    }
+
+                    <!-- Zmiana roli: Admin <-> User -->
+                    @if (user.Role == "Admin")
+                    {
+                        <form method="post" asp-action="ChangeRole" asp-controller="Admin" style="display:inline;">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <input type="hidden" name="newRole" value="User" />
+                            <button class="btn btn-secondary btn-sm">Ustaw jako User</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="ChangeRole" asp-controller="Admin" style="display:inline;">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <input type="hidden" name="newRole" value="Admin" />
+                            <button class="btn btn-danger btn-sm">Ustaw jako Admin</button>
+                        </form>
+                    }
+
+                    <!-- Reset hasła -->
+                    <form method="post" asp-action="ResetPassword" asp-controller="Admin" style="display:inline;">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button class="btn btn-dark btn-sm">Reset hasła</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

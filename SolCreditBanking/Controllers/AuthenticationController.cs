@@ -38,7 +38,7 @@ namespace SolCreditBanking.Controllers
                 {
                     UserId = user.Id,
                     AccountNumber = GenerateRandomAccountNumber(16),
-                    Balance = 100m,              
+                    Balance = 100m,
                 };
 
                 _context.Accounts.Add(newAccount);
@@ -56,25 +56,52 @@ namespace SolCreditBanking.Controllers
             return View();
         }
 
+
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+            if (user == null)
             {
-                var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
-                if (user != null)
-                {
-                    bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
-                    if (isPasswordValid)
-                    {
-                        HttpContext.Session.SetInt32("UserId", user.Id);
-                        return RedirectToAction("Dashboard", "Users");
-                    }
-                }
                 ModelState.AddModelError("", "Nieprawidłowy email lub hasło.");
+                return View(model);
             }
-            return View(model);
+
+            // Sprawdź czy user jest zablokowany
+            if (user.IsBlocked)
+            {
+                ModelState.AddModelError("", "Twoje konto jest zablokowane. Skontaktuj się z administratorem.");
+                return View(model);
+            }
+
+            // Walidacja hasła
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
+            if (!isPasswordValid)
+            {
+                ModelState.AddModelError("", "Nieprawidłowy email lub hasło.");
+                return View(model);
+            }
+
+            // Logowanie OK
+            HttpContext.Session.SetInt32("UserId", user.Id);
+
+            // DODAJ TO (zapis roli w sesji, żeby w widoku można sprawdzać, czy "Admin" czy "User")
+            HttpContext.Session.SetString("UserRole", user.Role);
+
+            return RedirectToAction("Dashboard", "Users");
         }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            // Wyczyszczenie całej sesji
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Authentication");
+        }
+
 
         private string GenerateRandomAccountNumber(int length)
         {

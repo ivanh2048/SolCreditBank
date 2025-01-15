@@ -42,6 +42,27 @@ namespace SolCreditBanking.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult BlockMyAccount()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Authentication");
+
+            var user = _context.Users.Find(userId.Value);
+            if (user != null && !user.IsBlocked)
+            {
+                user.IsBlocked = true;
+                _context.SaveChanges();
+            }
+
+            // Po zablokowaniu, user nie będzie mógł się logować
+            // ewentualnie od razu wylogowujemy
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Authentication");
+        }
+
+
     }
 
 }

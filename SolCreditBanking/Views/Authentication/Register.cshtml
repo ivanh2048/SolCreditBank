@@ -29,6 +29,13 @@
                 <label asp-for="Password" class="form-label">Hasło</label>
                 <input asp-for="Password" type="password" class="form-control" placeholder="Wpisz hasło" />
             </div>
+            <div class="mb-3">
+                <label for="Role" class="form-label">Typ konta</label>
+                <select asp-for="Role" class="form-control">
+                    <option value="User">Zwykłe konto</option>
+                    <option value="Admin">Konto Administratora</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-success w-100">Zarejestruj się</button>
         </form>
     </div>

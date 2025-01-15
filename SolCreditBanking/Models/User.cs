@@ -26,6 +26,12 @@ namespace SolCreditBanking.Models
 
         [Column("createdat")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Column("role")]
+        public string Role { get; set; } = "User";
+
+        [Column("is_blocked")]
+        public bool IsBlocked { get; set; } = true;
     }
 
 }

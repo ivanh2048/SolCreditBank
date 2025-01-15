@@ -12,7 +12,16 @@
                 <p class="card-text">
                     Saldo: <strong>@(ViewBag.Account?.Balance ?? 0)</strong> PLN
                 </p>
+                <a asp-action="Create" asp-controller="Transactions" class="btn btn-success btn-sm mt-2">
+                    Dodaj transakcję
                 </a>
+
+                <a asp-controller="Authentication" asp-action="Logout" class="btn btn-success btn-sm mt-2">Wyloguj</a>
+
+                <form asp-action="BlockMyAccount" asp-controller="Users" method="post">
+                    <button type="submit" class="btn btn-danger">Zablokuj moje konto</button>
+                </form>
+
             </div>
         </div>
     </div>
@@ -48,9 +57,6 @@
                         </tbody>
                     </table>
                 }
-                <a asp-action="Create" asp-controller="Transactions" class="btn btn-success btn-sm mt-2">
-                    Dodaj transakcję
-                </a>
             </div>
         </div>
     </div>
