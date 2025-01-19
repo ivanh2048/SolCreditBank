@@ -16,10 +16,16 @@ namespace SolCreditBanking.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int accountId)
         {
-            return View();
+            var model = new Transaction
+            {
+                AccountId = accountId
+            };
+
+            return View(model);
         }
+
 
         [HttpPost]
         public IActionResult Create(Transaction transaction)
