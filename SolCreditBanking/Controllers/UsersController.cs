@@ -15,7 +15,6 @@ namespace SolCreditBanking.Controllers
         }
 
         [HttpGet]
-        [HttpGet]
         public IActionResult Dashboard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -32,15 +31,20 @@ namespace SolCreditBanking.Controllers
             }
 
             var transactions = _context.Transactions
-                .Where(t => t.AccountId == account.Id)
+                .Where(t => t.AccountId == account.Id || t.DestinationAccountId == account.Id)
                 .OrderByDescending(t => t.Date)
                 .ToList();
 
             ViewBag.Account = account;
             ViewBag.Transactions = transactions;
 
+            var email = HttpContext.Session.GetString("UserEmail") ?? "Nieznany użytkownik";
+            ViewBag.UserEmail = email;
+
             return View();
         }
+
+
 
         [HttpPost]
         public IActionResult BlockMyAccount()

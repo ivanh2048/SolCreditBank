@@ -1,17 +1,22 @@
 ﻿@model Transaction
 
-<h2>Dodaj transakcję</h2>
+<h1>Wykonaj przelew</h1>
 
 <form asp-action="Create" asp-controller="Transactions" method="post">
-    <input type="hidden" asp-for="AccountId" />
+    <div class="form-group">
+        <label asp-for="AccountId">Źródłowe konto (ID):</label>
+        <input asp-for="AccountId" class="form-control" />
+    </div>
 
-    <div>
-        <label asp-for="TransactionType">Rodzaj transakcji (Deposit/Withdrawal):</label>
-        <input asp-for="TransactionType" />
+    <div class="form-group">
+        <label asp-for="DestinationAccountId">Docelowe konto (ID):</label>
+        <input asp-for="DestinationAccountId" class="form-control" />
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="Amount">Kwota:</label>
-        <input asp-for="Amount" type="number" step="0.01" />
+        <input asp-for="Amount" class="form-control" />
     </div>
-    <button type="submit">Zatwierdź</button>
+
+    <button type="submit" class="btn btn-primary">Zatwierdź</button>
 </form>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SolCreditBanking.Data;
 using SolCreditBanking.Models;
 using System;
@@ -15,30 +16,27 @@ namespace SolCreditBanking.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Lista wszystkich userów w systemie.
-        /// Tylko admin ma do niej dostęp.
-        /// </summary>
         [HttpGet]
         public IActionResult UserManagement()
         {
-            // Sprawdzamy, czy zalogowany jest admin
-            var role = HttpContext.Session.GetString("UserRole");
+            var email = HttpContext.Session.GetString("UserEmail") ?? "Nieznany użytkownik";
+            var role = HttpContext.Session.GetString("UserRole") ?? "Brak roli";
+
+            ViewBag.UserEmail = email;
+            ViewBag.UserRole = role;
+
             if (role != "Admin")
             {
                 return Forbid();
-                // lub return RedirectToAction("Dashboard", "Users");
             }
 
-            // Pobieramy wszystkich userów z bazy
+            // Pobieranie użytkowników
             var allUsers = _context.Users.ToList();
+            Console.WriteLine($"Liczba użytkowników w bazie: {allUsers.Count}");
+
             return View(allUsers);
-            // => Views/Admin/UserManagement.cshtml
         }
 
-        /// <summary>
-        /// Zmienia IsBlocked na true (blokada usera).
-        /// </summary>
         [HttpPost]
         public IActionResult BlockUser(int userId)
         {
@@ -57,9 +55,6 @@ namespace SolCreditBanking.Controllers
             return RedirectToAction("UserManagement");
         }
 
-        /// <summary>
-        /// Odblokowuje usera (IsBlocked = false).
-        /// </summary>
         [HttpPost]
         public IActionResult UnblockUser(int userId)
         {
@@ -78,9 +73,6 @@ namespace SolCreditBanking.Controllers
             return RedirectToAction("UserManagement");
         }
 
-        /// <summary>
-        /// Zmiana roli: User ↔ Admin
-        /// </summary>
         [HttpPost]
         public IActionResult ChangeRole(int userId, string newRole)
         {
@@ -93,16 +85,12 @@ namespace SolCreditBanking.Controllers
             var user = _context.Users.Find(userId);
             if (user != null)
             {
-                user.Role = newRole; // np. "Admin" lub "User"
+                user.Role = newRole;
                 _context.SaveChanges();
             }
             return RedirectToAction("UserManagement");
         }
 
-        /// <summary>
-        /// Reset hasła - generuje nowe hasło i nadpisuje PasswordHash w bazie.
-        /// Następnie pokazuje je w widoku.
-        /// </summary>
         [HttpPost]
         public IActionResult ResetPassword(int userId)
         {
@@ -115,37 +103,24 @@ namespace SolCreditBanking.Controllers
             var user = _context.Users.Find(userId);
             if (user == null)
             {
-                // ewentualnie zwróć błąd lub nic
                 return RedirectToAction("UserManagement");
             }
 
-            // Generujemy nowe, tymczasowe hasło
             string newTempPass = GenerateRandomPassword(8);
-            // Hashujemy
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newTempPass);
 
-            // Zapis w bazie
             _context.SaveChanges();
 
-            // Przekazujemy do widoku np. przez TempData lub ViewBag
             TempData["ResetMessage"] = $"Nowe hasło użytkownika {user.Email} to: {newTempPass}";
 
             return RedirectToAction("UserManagement");
         }
 
-        /// <summary>
-        /// Metoda pomocnicza do generowania losowego hasła.
-        /// </summary>
         private string GenerateRandomPassword(int length)
         {
             var random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var pass = new char[length];
-            for (int i = 0; i < length; i++)
-            {
-                pass[i] = chars[random.Next(chars.Length)];
-            }
-            return new string(pass);
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

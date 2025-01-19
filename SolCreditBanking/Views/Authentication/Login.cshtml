@@ -7,10 +7,17 @@
     <div class="col-12 col-md-6">
         <h2 class="mb-4">Logowanie</h2>
 
+        <!-- Wyświetlanie błędów -->
         @if (!ViewData.ModelState.IsValid)
         {
-            <div class="alert alert-danger">Nieprawidłowy email lub hasło.</div>
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
         }
+
 
         <form asp-action="Login" asp-controller="Authentication" method="post" class="p-4 shadow-sm bg-white rounded">
             <div class="mb-3">

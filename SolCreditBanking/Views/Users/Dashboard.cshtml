@@ -1,26 +1,37 @@
 ﻿@{
     Layout = "_Layout";
+    var role = ViewBag.UserRole as string;
 }
 
 <h2 class="mt-4 mb-4">Twój Dashboard</h2>
+<div class="alert alert-info">
+    Zalogowany jako: <strong>@ViewBag.UserEmail</strong> (<strong>@ViewBag.UserRole</strong>)
+</div>
 
 <div class="row">
     <div class="col-md-6">
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">Konto główne</h5>
+                <p>Numer karty: <strong>@ViewBag.Account?.CardNumber</strong></p>
                 <p class="card-text">
                     Saldo: <strong>@(ViewBag.Account?.Balance ?? 0)</strong> PLN
                 </p>
-                <a asp-action="Create" asp-controller="Transactions" class="btn btn-success btn-sm mt-2">
+                <a asp-action="Create"
+                   asp-controller="Transactions"
+                   asp-route-accountId="@ViewBag.Account.Id"
+                   class="btn btn-success btn-sm mt-2">
                     Dodaj transakcję
                 </a>
 
+
                 <a asp-controller="Authentication" asp-action="Logout" class="btn btn-success btn-sm mt-2">Wyloguj</a>
 
-                <form asp-action="BlockMyAccount" asp-controller="Users" method="post">
-                    <button type="submit" class="btn btn-danger">Zablokuj moje konto</button>
-                </form>
+                <!-- Warunkowe wyświetlanie przycisku "Zablokuj moje konto" -->
+                @if (role == "Admin")
+                {
+                    <button class="btn btn-danger">Zablokuj moje konto</button>
+                }
 
             </div>
         </div>

@@ -31,7 +31,7 @@ namespace SolCreditBanking.Models
         public string Role { get; set; } = "User";
 
         [Column("is_blocked")]
-        public bool IsBlocked { get; set; } = true;
+        public bool IsBlocked { get; set; } = false;
     }
 
 }

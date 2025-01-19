@@ -27,18 +27,21 @@ namespace SolCreditBanking.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                // Hashowanie hasła
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-
+                // Dodanie użytkownika do bazy
                 _context.Users.Add(user);
                 _context.SaveChanges();
 
+                // Tworzenie konta z domyślnym saldem
                 var newAccount = new Account
                 {
                     UserId = user.Id,
-                    AccountNumber = GenerateRandomAccountNumber(16),
+                    AccountNumber = GenerateRandomAccountNumber(4),
+                    CardNumber = GenerateRandomCardNumber(16),
                     Balance = 100m,
+                    
                 };
 
                 _context.Accounts.Add(newAccount);
@@ -55,7 +58,6 @@ namespace SolCreditBanking.Controllers
         {
             return View();
         }
-
 
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
@@ -87,12 +89,17 @@ namespace SolCreditBanking.Controllers
 
             // Logowanie OK
             HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserEmail", user.Email); // Zapis email w sesji
+            HttpContext.Session.SetString("UserRole", user.Role); // Zapis roli w sesji
 
-            // DODAJ TO (zapis roli w sesji, żeby w widoku można sprawdzać, czy "Admin" czy "User")
-            HttpContext.Session.SetString("UserRole", user.Role);
+            if (user.Role == "Admin")
+            {
+                return RedirectToAction("UserManagement", "Admin");
+            }
 
             return RedirectToAction("Dashboard", "Users");
         }
+
 
         [HttpGet]
         public IActionResult Logout()
@@ -102,14 +109,26 @@ namespace SolCreditBanking.Controllers
             return RedirectToAction("Login", "Authentication");
         }
 
-
-        private string GenerateRandomAccountNumber(int length)
+        private string GenerateRandomAccountNumber(int number)
         {
-            var random = new Random();
-            var digits = new char[length];
-            for (int i = 0; i < length; i++)
+            Random random = new Random();
+            var digits = new char[4];
+            for (int i = 0; i < 4; i++)
             {
-                digits[i] = (char)('0' + random.Next(10));
+                // Losujemy cyfrę (0-9) i zamieniamy na znak
+                digits[i] = (char)('0' + random.Next(0, 10));
+            }
+            return new string(digits);
+        }
+
+        private string GenerateRandomCardNumber(int number)
+        {
+            Random random = new Random();
+            var digits = new char[16];
+            for (int i = 0; i < 16; i++)
+            {
+                // Losujemy cyfrę (0-9) i zamieniamy na znak
+                digits[i] = (char)('0' + random.Next(0, 10));
             }
             return new string(digits);
         }

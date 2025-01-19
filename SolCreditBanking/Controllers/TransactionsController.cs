@@ -16,14 +16,9 @@ namespace SolCreditBanking.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create(int accountId)
+        public IActionResult Create()
         {
-
-            var model = new Transaction
-            {
-                AccountId = accountId
-            };
-            return View(model);
+            return View();
         }
 
         [HttpPost]
@@ -34,42 +29,39 @@ namespace SolCreditBanking.Controllers
                 return View(transaction);
             }
 
-            var account = _context.Accounts.FirstOrDefault(a => a.Id == transaction.AccountId);
-            if (account == null)
+            // Znajdź konto źródłowe
+            var sourceAccount = _context.Accounts.FirstOrDefault(a => a.Id == transaction.AccountId);
+            if (sourceAccount == null)
             {
-                ModelState.AddModelError("", "Konto nie istnieje.");
+                ModelState.AddModelError("", "Konto źródłowe nie istnieje.");
                 return View(transaction);
             }
 
+            // Znajdź konto docelowe
+            var destinationAccount = _context.Accounts.FirstOrDefault(a => a.Id == transaction.DestinationAccountId);
+            if (destinationAccount == null)
+            {
+                ModelState.AddModelError("", "Konto docelowe nie istnieje.");
+                return View(transaction);
+            }
+
+            // Sprawdzenie środków na koncie źródłowym
+            if (sourceAccount.Balance < transaction.Amount)
+            {
+                ModelState.AddModelError("", "Brak wystarczających środków na koncie źródłowym.");
+                return View(transaction);
+            }
+
+            // Aktualizacja salda kont
+            sourceAccount.Balance -= transaction.Amount;
+            destinationAccount.Balance += transaction.Amount;
+
+            // Zapis transakcji
             transaction.Date = DateTime.UtcNow;
-
-            if (transaction.TransactionType == "Deposit")
-            {
-                account.Balance += transaction.Amount;
-            }
-            else if (transaction.TransactionType == "Withdrawal")
-            {
-                if (account.Balance >= transaction.Amount)
-                {
-                    account.Balance -= transaction.Amount;
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Niewystarczające środki na koncie.");
-                    return View(transaction);
-                }
-            }
-            else
-            {
-                ModelState.AddModelError("", "Nieznany typ transakcji.");
-                return View(transaction);
-            }
-
             _context.Transactions.Add(transaction);
-            _context.Accounts.Update(account);
             _context.SaveChanges();
 
-            return RedirectToAction("Dashboard", "Users");
+            return RedirectToAction("Dashboard", "Users"); // Przekierowanie po sukcesie
         }
     }
 }

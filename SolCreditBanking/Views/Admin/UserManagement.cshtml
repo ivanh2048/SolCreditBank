@@ -3,7 +3,13 @@
     Layout = "_Layout";
 }
 
+
 <h2>Panel Administratora – Zarządzanie Użytkownikami</h2>
+<div class="alert alert-info">
+    Zalogowany jako: <strong>@ViewBag.UserEmail</strong> (<strong>@ViewBag.UserRole</strong>)
+</div>
+
+<p>Liczba użytkowników: @Model?.Count()</p>
 
 <!-- Komunikat o resecie hasła, jeśli istnieje w TempData -->
 @if (TempData["ResetMessage"] != null)
@@ -24,15 +30,17 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Id</td>
-                <td>@user.Email</td>
-                <td>@user.Role</td>
-                <td>@user.IsBlocked</td>
-                <td>
-                    <!-- Blokowanie/odblokowanie -->
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.Email</td>
+            <td>@user.Role</td>
+            <td>@(user.IsBlocked ? "Zablokowany" : "Aktywny")</td>
+            <td>
+                <!-- Blokowanie/odblokowanie -->
+                @if (user.Email != ViewBag.UserEmail) 
+                {
                     @if (!user.IsBlocked)
                     {
                         <form method="post" asp-action="BlockUser" asp-controller="Admin" style="display:inline;">
@@ -47,32 +55,33 @@
                             <button class="btn btn-success btn-sm">Odblokuj</button>
                         </form>
                     }
+                }
 
-                    <!-- Zmiana roli: Admin <-> User -->
-                    @if (user.Role == "Admin")
-                    {
-                        <form method="post" asp-action="ChangeRole" asp-controller="Admin" style="display:inline;">
-                            <input type="hidden" name="userId" value="@user.Id" />
-                            <input type="hidden" name="newRole" value="User" />
-                            <button class="btn btn-secondary btn-sm">Ustaw jako User</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-action="ChangeRole" asp-controller="Admin" style="display:inline;">
-                            <input type="hidden" name="userId" value="@user.Id" />
-                            <input type="hidden" name="newRole" value="Admin" />
-                            <button class="btn btn-danger btn-sm">Ustaw jako Admin</button>
-                        </form>
-                    }
-
-                    <!-- Reset hasła -->
-                    <form method="post" asp-action="ResetPassword" asp-controller="Admin" style="display:inline;">
+                <!-- Zmiana roli: Admin <-> User -->
+                @if (user.Role == "Admin")
+                {
+                    <form method="post" asp-action="ChangeRole" asp-controller="Admin" style="display:inline;">
                         <input type="hidden" name="userId" value="@user.Id" />
-                        <button class="btn btn-dark btn-sm">Reset hasła</button>
+                        <input type="hidden" name="newRole" value="User" />
                     </form>
-                </td>
-            </tr>
-        }
-    </tbody>
+                }
+                else
+                {
+                    <form method="post" asp-action="ChangeRole" asp-controller="Admin" style="display:inline;">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <input type="hidden" name="newRole" value="Admin" />
+                        <button class="btn btn-danger btn-sm">Ustaw jako Admin</button>
+                    </form>
+                }
+
+                <!-- Reset hasła -->
+                <form method="post" asp-action="ResetPassword" asp-controller="Admin" style="display:inline;">
+                    <input type="hidden" name="userId" value="@user.Id" />
+                    <button class="btn btn-dark btn-sm">Reset hasła</button>
+                </form>
+            </td>
+        </tr>
+    }
+</tbody>
+
 </table>

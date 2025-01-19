@@ -1,25 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace SolCreditBanking.Models
+﻿using SolCreditBanking.Models;
+public class Transaction
 {
-    [Table("transactions")]
-    public class Transaction
-    {
-        [Key]
-        [Column("id")]
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Column("accountid")]
-        public int AccountId { get; set; }
+    // Konto źródłowe (z którego wychodzą pieniądze)
+    public int AccountId { get; set; }
+    public virtual Account SourceAccount { get; set; }
 
-        [Column("amount")]
-        public decimal Amount { get; set; }
+    // Konto docelowe (na które trafiają pieniądze)
+    public int DestinationAccountId { get; set; }
+    public virtual Account DestinationAccount { get; set; }
 
-        [Column("transactiontype")]
-        public string TransactionType { get; set; } = string.Empty; 
+    // Kwota przelewu
+    public decimal Amount { get; set; }
 
-        [Column("date")]
-        public DateTime Date { get; set; } = DateTime.UtcNow;
-    }
+    // Data transakcji
+    public DateTime Date { get; set; }
 }

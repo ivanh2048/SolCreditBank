@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite("Data Source=SoloCredit.db"));
 
 // Add session services
 builder.Services.AddSession(options =>
@@ -18,6 +18,7 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
 
 // Use session middleware
 app.UseSession();
