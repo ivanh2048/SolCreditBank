@@ -37,8 +37,7 @@ namespace SolCreditBanking.Controllers
                 // Tworzenie konta z domyślnym saldem
                 var newAccount = new Account
                 {
-                    UserId = user.Id,
-                    AccountNumber = GenerateRandomAccountNumber(4),
+                    Id = user.Id,
                     CardNumber = GenerateRandomCardNumber(16),
                     Balance = 100m,
                     
@@ -107,18 +106,6 @@ namespace SolCreditBanking.Controllers
             // Wyczyszczenie całej sesji
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Authentication");
-        }
-
-        private string GenerateRandomAccountNumber(int number)
-        {
-            Random random = new Random();
-            var digits = new char[4];
-            for (int i = 0; i < 4; i++)
-            {
-                // Losujemy cyfrę (0-9) i zamieniamy na znak
-                digits[i] = (char)('0' + random.Next(0, 10));
-            }
-            return new string(digits);
         }
 
         private string GenerateRandomCardNumber(int number)

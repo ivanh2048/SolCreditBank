@@ -11,7 +11,7 @@ using SolCreditBanking.Data;
 namespace SolCreditBanking.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250119112754_Initial")]
+    [Migration("20250119123743_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,31 +24,18 @@ namespace SolCreditBanking.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("accountnumber");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Balance")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("balance");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CardNumber")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("cardnumber");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("userid");
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("accounts");
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("SolCreditBanking.Models.Transaction", b =>
@@ -66,8 +53,9 @@ namespace SolCreditBanking.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("DestinationAccountId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DestinationCardNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("TransactionType")
                         .IsRequired()
@@ -76,8 +64,6 @@ namespace SolCreditBanking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
-
-                    b.HasIndex("DestinationAccountId");
 
                     b.ToTable("Transactions");
                 });
@@ -127,17 +113,6 @@ namespace SolCreditBanking.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("SolCreditBanking.Models.Account", b =>
-                {
-                    b.HasOne("SolCreditBanking.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SolCreditBanking.Models.Transaction", b =>
                 {
                     b.HasOne("SolCreditBanking.Models.Account", "Account")
@@ -146,20 +121,12 @@ namespace SolCreditBanking.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SolCreditBanking.Models.Account", "DestinationAccount")
-                        .WithMany("TransactionsAsDestination")
-                        .HasForeignKey("DestinationAccountId");
-
                     b.Navigation("Account");
-
-                    b.Navigation("DestinationAccount");
                 });
 
             modelBuilder.Entity("SolCreditBanking.Models.Account", b =>
                 {
                     b.Navigation("Transactions");
-
-                    b.Navigation("TransactionsAsDestination");
                 });
 #pragma warning restore 612, 618
         }

@@ -26,10 +26,10 @@ namespace SolCreditBanking.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(transaction);
+                return View(transaction); // Powrót do formularza
             }
 
-            // Znajdź konto źródłowe
+            // Konto źródłowe (zalogowany użytkownik)
             var sourceAccount = _context.Accounts.FirstOrDefault(a => a.Id == transaction.AccountId);
             if (sourceAccount == null)
             {
@@ -37,31 +37,35 @@ namespace SolCreditBanking.Controllers
                 return View(transaction);
             }
 
-            // Znajdź konto docelowe
-            var destinationAccount = _context.Accounts.FirstOrDefault(a => a.Id == transaction.DestinationAccountId);
-            if (destinationAccount == null)
+            // Konto docelowe (na podstawie numeru karty)
+            var targetAccount = _context.Accounts.FirstOrDefault(a => a.CardNumber == transaction.DestinationCardNumber);
+            if (targetAccount == null)
             {
-                ModelState.AddModelError("", "Konto docelowe nie istnieje.");
+                ModelState.AddModelError("", "Nie znaleziono konta docelowego.");
                 return View(transaction);
             }
 
-            // Sprawdzenie środków na koncie źródłowym
+            // Sprawdzenie środków
             if (sourceAccount.Balance < transaction.Amount)
             {
-                ModelState.AddModelError("", "Brak wystarczających środków na koncie źródłowym.");
+                ModelState.AddModelError("", "Niewystarczające środki na koncie.");
                 return View(transaction);
             }
 
-            // Aktualizacja salda kont
+            // Aktualizacja salda
             sourceAccount.Balance -= transaction.Amount;
-            destinationAccount.Balance += transaction.Amount;
+            targetAccount.Balance += transaction.Amount;
 
             // Zapis transakcji
+            transaction.TransactionType = "Transfer";
             transaction.Date = DateTime.UtcNow;
+
             _context.Transactions.Add(transaction);
             _context.SaveChanges();
 
-            return RedirectToAction("Dashboard", "Users"); // Przekierowanie po sukcesie
+            // Przekierowanie do dashboardu
+            return RedirectToAction("Dashboard", "Users");
         }
+
     }
 }

@@ -1,22 +1,18 @@
-﻿@model Transaction
+﻿@model SolCreditBanking.Models.Transaction
 
-<h1>Wykonaj przelew</h1>
+<h1>Dodaj przelew</h1>
 
 <form asp-action="Create" asp-controller="Transactions" method="post">
+    <input type="hidden" asp-for="AccountId" />
     <div class="form-group">
-        <label asp-for="AccountId">Źródłowe konto (ID):</label>
-        <input asp-for="AccountId" class="form-control" />
+        <label>Numer karty odbiorcy:</label>
+        <input asp-for="DestinationCardNumber" class="form-control" />
+        <span asp-validation-for="DestinationCardNumber" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label asp-for="DestinationAccountId">Docelowe konto (ID):</label>
-        <input asp-for="DestinationAccountId" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Amount">Kwota:</label>
+        <label>Kwota:</label>
         <input asp-for="Amount" class="form-control" />
+        <span asp-validation-for="Amount" class="text-danger"></span>
     </div>
-
     <button type="submit" class="btn btn-primary">Zatwierdź</button>
 </form>

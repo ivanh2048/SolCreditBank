@@ -1,19 +1,28 @@
-﻿using SolCreditBanking.Models;
-public class Transaction
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SolCreditBanking.Models
 {
-    public int Id { get; set; }
+    public class Transaction
+    {
+        [Key]
+        public int Id { get; set; }
 
-    // Konto źródłowe (z którego wychodzą pieniądze)
-    public int AccountId { get; set; }
-    public virtual Account SourceAccount { get; set; }
+        [Required]
+        public int AccountId { get; set; } // Konto źródłowe
 
-    // Konto docelowe (na które trafiają pieniądze)
-    public int DestinationAccountId { get; set; }
-    public virtual Account DestinationAccount { get; set; }
+        [ForeignKey("AccountId")] // Klucz obcy do konta źródłowego
+        public virtual Account? Account { get; set; }
 
-    // Kwota przelewu
-    public decimal Amount { get; set; }
+        [Required]
+        public string? DestinationCardNumber { get; set; } // Numer karty konta docelowego
 
-    // Data transakcji
-    public DateTime Date { get; set; }
+        [Required]
+        public decimal Amount { get; set; }
+
+        public string TransactionType { get; set; } = "Transfer";
+
+        public DateTime Date { get; set; } = DateTime.UtcNow;
+    }
 }

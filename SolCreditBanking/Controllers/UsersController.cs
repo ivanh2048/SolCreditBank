@@ -23,7 +23,7 @@ namespace SolCreditBanking.Controllers
                 return RedirectToAction("Login", "Authentication");
             }
 
-            var account = _context.Accounts.FirstOrDefault(a => a.UserId == userId.Value);
+            var account = _context.Accounts.FirstOrDefault(a => a.Id == userId.Value);
             if (account == null)
             {
                 ViewBag.ErrorMessage = "Konto użytkownika nie zostało znalezione.";
@@ -31,7 +31,7 @@ namespace SolCreditBanking.Controllers
             }
 
             var transactions = _context.Transactions
-                .Where(t => t.AccountId == account.Id || t.DestinationAccountId == account.Id)
+                .Where(t => t.AccountId == account.Id || t.DestinationCardNumber == account.CardNumber)
                 .OrderByDescending(t => t.Date)
                 .ToList();
 
@@ -43,8 +43,6 @@ namespace SolCreditBanking.Controllers
 
             return View();
         }
-
-
 
         [HttpPost]
         public IActionResult BlockMyAccount()
@@ -65,8 +63,5 @@ namespace SolCreditBanking.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Authentication");
         }
-
-
     }
-
 }
